@@ -1,13 +1,42 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect,useState } from 'react'
-import { useConnectWallet } from '@web3-onboard/react'
+import { useConnectWallet,useSetChain,useAccountCenter } from '@web3-onboard/react'
 import { ethers } from 'ethers'
 import { useCallback } from 'react'
 
 export default function Home(props) {
-  const [{ wallet, connecting }, connect, disconnect] = useConnectWallet()
+  const [{ wallet, connecting }, connect, disconnect,addresses] = useConnectWallet()
+  const all = useConnectWallet()
+  const [
+    {
+      chains, // the list of chains that web3-onboard was initialized with
+      connectedChain, // the current chain the user's wallet is connected to
+      settingChain // boolean indicating if the chain is in the process of being set
+    },
+    setChain // function to call to initiate user to switch chains in their wallet
+  ] = useSetChain()
   const [ethersProvider, setProvider] = useState()
+  console.log('connectedChain',connectedChain)
+  console.log('wallet',wallet)
+  console.log('ethersProvider',ethersProvider)
+  console.log('all',all)
+  
+  //根据ethersProvider 介入合约操作
+  /**
+   * 
+  const signer = provider.getUncheckedSigner()
+
+  const txDetails = {
+    to: toAddress,
+    value: 1000000000000000
+  }
+
+  const sendTransaction = () => {
+    return signer.sendTransaction(txDetails).then(tx => tx.hash)
+  }
+  */
+
 
   useEffect(() => {
     // If the wallet has a provider than the wallet is connected
