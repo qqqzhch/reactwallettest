@@ -4,23 +4,57 @@ import { useEffect,useState } from 'react'
 import { useConnectWallet,useSetChain,useAccountCenter } from '@web3-onboard/react'
 import { ethers } from 'ethers'
 import { useCallback } from 'react'
+import { useWeb3React, Web3ReactHooks,  } from '@web3-react/core'
+import { hooks, metaMask } from '../web3-data-provider/connectors/metaMask'
 
 export default function Home(props) {
-  const [{ wallet, connecting }, connect, disconnect,addresses] = useConnectWallet()
-  const all = useConnectWallet()
-  const [
-    {
-      chains, // the list of chains that web3-onboard was initialized with
-      connectedChain, // the current chain the user's wallet is connected to
-      settingChain // boolean indicating if the chain is in the process of being set
-    },
-    setChain // function to call to initiate user to switch chains in their wallet
-  ] = useSetChain()
-  const [ethersProvider, setProvider] = useState()
-  console.log('connectedChain',connectedChain)
-  console.log('wallet',wallet)
-  console.log('ethersProvider',ethersProvider)
-  console.log('all',all)
+  const { connector,
+    // chainId,
+    // accounts,
+    // isActivating,
+    // account,
+    // isActive,
+    // provider,
+    // ENSNames,
+    // ENSName,
+    // hooks 
+  } = useWeb3React()
+  // console.log('connector',connector)  
+  // console.log('chainId',chainId)
+  // console.log('accounts',accounts)
+  // console.log(
+  //   chainId,
+  //   accounts,
+  //   isActivating,
+  //   account,
+  //   isActive,
+  //   provider,
+  //   ENSNames,
+  //   ENSName,
+  //   hooks)
+  const { useChainId, useAccounts, useIsActivating, useIsActive, useProvider, useENSNames } = hooks
+  const isActive = useIsActive()
+  let chainId=useChainId()
+  let accounts=useAccounts();
+  let provider = useProvider();
+  console.log(chainId,accounts,provider )
+
+
+  // const [{ wallet, connecting }, connect, disconnect,addresses] = useConnectWallet()
+  // const all = useConnectWallet()
+  // const [
+  //   {
+  //     chains, // the list of chains that web3-onboard was initialized with
+  //     connectedChain, // the current chain the user's wallet is connected to
+  //     settingChain // boolean indicating if the chain is in the process of being set
+  //   },
+  //   setChain // function to call to initiate user to switch chains in their wallet
+  // ] = useSetChain()
+  // const [ethersProvider, setProvider] = useState()
+  // console.log('connectedChain',connectedChain)
+  // console.log('wallet',wallet)
+  // console.log('ethersProvider',ethersProvider)
+  // console.log('all',all)
   
   //根据ethersProvider 介入合约操作
   /**
@@ -38,16 +72,39 @@ export default function Home(props) {
   */
 
 
+  // useEffect(() => {
+  //   // If the wallet has a provider than the wallet is connected
+  //   if (wallet&&wallet.provider) {
+  //     setProvider(new ethers.providers.Web3Provider(wallet.provider))
+  //   }
+  // }, [wallet])
+  // let connectBtn = useCallback(()=>{
+  //   connect({autoSelect:"MetaMask"})
+  // },[])
   useEffect(() => {
-    // If the wallet has a provider than the wallet is connected
-    if (wallet&&wallet.provider) {
-      setProvider(new ethers.providers.Web3Provider(wallet.provider))
-    }
-  }, [wallet])
-  let connectBtn = useCallback(()=>{
-    connect({autoSelect:"MetaMask"})
-  },[])
+    void metaMask.connectEagerly().catch(() => {
+      console.debug('Failed to connect eagerly to metamask')
+    })
+  }, [])
 
+ let desiredChainId=1;
+  const onClick = useCallback(() => {
+    console.log('connector',connector)
+    connector.activate()
+    // if (connector instanceof GnosisSafe) {
+    //   connector
+    //     .activate()
+    //     .catch(setError)
+    // } else if (connector instanceof WalletConnect || connector instanceof Network) {
+    //   connector
+    //     .activate(desiredChainId === -1 ? undefined : desiredChainId)
+    //     .catch(setError)
+    // } else {
+    //   connector
+    //     .activate(desiredChainId === -1 ? undefined : getAddChainParameters(desiredChainId))
+    //     .catch(setError)
+    // }
+  }, [connector, desiredChainId])
 
   return (
     <div className="container">
@@ -65,8 +122,8 @@ export default function Home(props) {
           {props.hello}|Get started by editing <code>pages/index.js</code>
         </p>
         <button
-          disabled={connecting}
-          onClick={connectBtn}>
+          disabled={isActive}
+          onClick={onClick}>
           Connect
         </button>
 
