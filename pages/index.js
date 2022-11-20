@@ -1,24 +1,17 @@
 import Head from 'next/head'
 import Link from 'next/link'
 import { useEffect,useState } from 'react'
-import { useConnectWallet,useSetChain,useAccountCenter } from '@web3-onboard/react'
+
 import { ethers } from 'ethers'
 import { useCallback } from 'react'
 import { useWeb3React, Web3ReactHooks,  } from '@web3-react/core'
-import { hooks, metaMask } from '../web3-data-provider/connectors/metaMask'
+import { useWallet } from '../web3-data-provider/connectors/useWallet'
+import {walletConnect, hooks as walletConnecthooks } from '../web3-data-provider/connectors/walletConnect'
 
+//https://github.com/Uniswap/interface/blob/main/src/connection/index.ts
+//https://github.com/Uniswap/interface/blob/main/src/components/WalletModal/WalletConnectOption.tsx
 export default function Home(props) {
-  const { connector,
-    // chainId,
-    // accounts,
-    // isActivating,
-    // account,
-    // isActive,
-    // provider,
-    // ENSNames,
-    // ENSName,
-    // hooks 
-  } = useWeb3React()
+  
   // console.log('connector',connector)  
   // console.log('chainId',chainId)
   // console.log('accounts',accounts)
@@ -32,12 +25,25 @@ export default function Home(props) {
   //   ENSNames,
   //   ENSName,
   //   hooks)
-  const { useChainId, useAccounts, useIsActivating, useIsActive, useProvider, useENSNames } = hooks
-  const isActive = useIsActive()
-  let chainId=useChainId()
-  let accounts=useAccounts();
-  let provider = useProvider();
-  console.log(chainId,accounts,provider )
+  let {wallet} = useWallet('walletConnect')
+  
+  const { connector,
+    chainId,
+    accounts,
+    isActivating,
+    account,
+    isActive,
+    provider,
+    ENSNames,
+    ENSName,
+    hooks 
+  } = useWeb3React()
+  console.log('connector',connector)
+  // const isActive = useIsActive()
+  // let chainId=useChainId()
+  // let accounts=useAccounts();
+  // let provider = useProvider();
+  // console.log(chainId,accounts,provider )
 
 
   // const [{ wallet, connecting }, connect, disconnect,addresses] = useConnectWallet()
@@ -82,15 +88,20 @@ export default function Home(props) {
   //   connect({autoSelect:"MetaMask"})
   // },[])
   useEffect(() => {
-    void metaMask.connectEagerly().catch(() => {
-      console.debug('Failed to connect eagerly to metamask')
-    })
-  }, [])
+    if(wallet){
+      // void wallet.connectEagerly().catch(() => {
+      //   console.debug('Failed to connect eagerly to metamask')
+      // })  
+    }
+    
+  }, [wallet])
 
  let desiredChainId=1;
   const onClick = useCallback(() => {
     console.log('connector',connector)
-    connector.activate()
+    console.log('walletConnect',walletConnect)
+    //  walletConnect.activate(desiredChainId)
+    connector.activate(1)
     // if (connector instanceof GnosisSafe) {
     //   connector
     //     .activate()
