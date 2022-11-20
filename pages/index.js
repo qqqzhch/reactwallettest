@@ -5,8 +5,9 @@ import { useEffect,useState } from 'react'
 import { ethers } from 'ethers'
 import { useCallback } from 'react'
 import { useWeb3React, Web3ReactHooks,  } from '@web3-react/core'
-import { useWallet } from '../web3-data-provider/connectors/useWallet'
-import {walletConnect, hooks as walletConnecthooks } from '../web3-data-provider/connectors/walletConnect'
+import {connectors} from '../web3-data-provider/Web3Provider'
+
+
 
 //https://github.com/Uniswap/interface/blob/main/src/connection/index.ts
 //https://github.com/Uniswap/interface/blob/main/src/components/WalletModal/WalletConnectOption.tsx
@@ -25,20 +26,18 @@ export default function Home(props) {
   //   ENSNames,
   //   ENSName,
   //   hooks)
-  let {wallet} = useWallet('walletConnect')
+  // let {wallet} = useWallet('walletConnect')
+
   
-  const { connector,
-    chainId,
-    accounts,
-    isActivating,
-    account,
-    isActive,
-    provider,
-    ENSNames,
-    ENSName,
-    hooks 
-  } = useWeb3React()
+  const {hooks} = useWeb3React()
+  const test = useWeb3React()
+  console.log('useWeb3React',test)
+  let connector = connectors[0][0]
+  const {useSelectedAccounts,useSelectedChainId,useSelectedProvider, } = hooks
+  
   console.log('connector',connector)
+  let useraccounts = useSelectedAccounts(connector)
+  let userChainId =  useSelectedChainId(connector)
   // const isActive = useIsActive()
   // let chainId=useChainId()
   // let accounts=useAccounts();
@@ -78,30 +77,18 @@ export default function Home(props) {
   */
 
 
-  // useEffect(() => {
-  //   // If the wallet has a provider than the wallet is connected
-  //   if (wallet&&wallet.provider) {
-  //     setProvider(new ethers.providers.Web3Provider(wallet.provider))
-  //   }
-  // }, [wallet])
-  // let connectBtn = useCallback(()=>{
-  //   connect({autoSelect:"MetaMask"})
-  // },[])
   useEffect(() => {
-    if(wallet){
-      // void wallet.connectEagerly().catch(() => {
-      //   console.debug('Failed to connect eagerly to metamask')
-      // })  
-    }
-    
-  }, [wallet])
+    // If the wallet has a provider than the wallet is connected
+    connector.connectEagerly()
+  },[])
+  
 
  let desiredChainId=1;
-  const onClick = useCallback(() => {
-    console.log('connector',connector)
-    console.log('walletConnect',walletConnect)
+  const onClick = useCallback((connectorSelect) => {
+    // console.log('connector',connector)
+    // console.log('walletConnect',walletConnect)
     //  walletConnect.activate(desiredChainId)
-    connector.activate(1)
+    connectorSelect.activate(1)
     // if (connector instanceof GnosisSafe) {
     //   connector
     //     .activate()
@@ -128,15 +115,22 @@ export default function Home(props) {
         <h1 className="title">
         <Link href="/demo">this page!</Link>
         </h1>
+        {connectors.map((item)=>{
+          return <button onClick={()=>{onClick(item[0])}}>
+          Connect
+        </button>
+        })}
+        {
+          useraccounts
+        }
+        {
+          userChainId
+        }
 
         <p className="description">
           {props.hello}|Get started by editing <code>pages/index.js</code>
         </p>
-        <button
-          disabled={isActive}
-          onClick={onClick}>
-          Connect
-        </button>
+        
 
         <div className="grid">
           <a href="https://nextjs.org/docs" className="card">

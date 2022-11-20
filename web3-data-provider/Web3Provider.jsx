@@ -5,15 +5,15 @@ import { useWeb3React, Web3ReactHooks, Web3ReactProvider } from '@web3-react/cor
 import { hooks as metaMaskHooks, metaMask } from './connectors/metaMask'
 import { hooks as coinbaseHooks, coinbaseWallet} from './connectors/coinbaseWallet'
 import { hooks as gnosisSafeHooks, gnosisSafe} from './connectors/gnosisSafe'
-import { hooks as coinbaseWalletHooks, walletConnect} from './connectors/walletConnect'
+import { hooks as walletConnectHooks, walletConnect} from './connectors/walletConnect'
 
 
 // const { useChainId, useAccounts, useIsActivating, useIsActive, useProvider, useENSNames } = hooks
 
-const connectors = [
+export const connectors = [
   [metaMask, metaMaskHooks],
   [walletConnect, walletConnectHooks],
-  [coinbaseWallet, coinbaseWalletHooks],
+  // [coinbaseWallet, coinbaseWalletHooks],
 
 ]
 console.log('connectors',connectors)
