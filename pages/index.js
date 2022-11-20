@@ -117,7 +117,7 @@ export default function Home(props) {
         </h1>
         {connectors.map((item)=>{
           return <button onClick={()=>{onClick(item[0])}}>
-          Connect
+          {item[0].constructor.name}
         </button>
         })}
         {
